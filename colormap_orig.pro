@@ -1,9 +1,7 @@
-pro colormap_deconv
-
-                                ;Make a color map and compare to
-                                ;http://adsabs.harvard.edu/abs/2008MNRAS.385L..83C
+pro colormap_orig
   rad=40.
-  fits_read, 'data/m59_g_lucy.fits',img_g,h_g
+  fits_read, 'data/HST_9401_09_ACS_WFC_F475W_drz.fits',img_g,h_g
+  img_g=img_g[4260:4372,3942:4054]
   fit_g=gauss2dfit(img_g,gparam)
   xc_g=gparam[4]
   yc_g=gparam[5]
@@ -13,7 +11,8 @@ pro colormap_deconv
   img_g=img_g/375.
   sizeg=size(img_g,/dim)
 
-  fits_read, 'data/m59_z_lucy.fits',img_z,h_z
+  fits_read, 'data/HST_9401_09_ACS_WFC_F850LP_drz.fits',img_z,h_z
+  img_z=img_z[4260:4372,3942:4054]
   fit_z=gauss2dfit(img_z,zparam)
   xc_z=zparam[4]
   yc_z=zparam[5]
@@ -23,7 +22,7 @@ pro colormap_deconv
   img_z=img_z/560.
   sizez=size(img_z,/dim)
   flratio=img_g/img_z
-  writefits,'fluxratio_deconv.fits',flratio
+  writefits,'fluxratio_orig.fits',flratio
   scale=0.05
   zeropoint_g = 26.05923
   zeropoint_z = 24.84245
@@ -56,7 +55,9 @@ pro colormap_deconv
   contour,color,xcoord,ycoord,/over,levels=klevels,c_color=0,c_thick=4
 
 
-  writefits,'colormap_deconv.fits',color
+  writefits,'colormap_orig.fits',color
   stop
-END
 
+
+  
+END
