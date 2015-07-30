@@ -8,7 +8,7 @@ pro colormap_orig
   xmin=fix(xc_g-rad) & xmax=fix(xc_g+rad+0.5)
   ymin=fix(yc_g-rad) & ymax=fix(yc_g+rad+0.5)
   img_g=img_g[xmin:xmax,ymin:ymax]
-  img_g=img_g/375.
+  img_g=img_g/750.
   sizeg=size(img_g,/dim)
 
   fits_read, 'data/HST_9401_09_ACS_WFC_F850LP_drz.fits',img_z,h_z
@@ -19,7 +19,7 @@ pro colormap_orig
   xmin=fix(xc_z-rad) & xmax=fix(xc_z+rad+0.5)
   ymin=fix(yc_z-rad) & ymax=fix(yc_z+rad+0.5)  
   img_z=img_z[xmin:xmax,ymin:ymax]
-  img_z=img_z/560.
+  img_z=img_z/1210.
   sizez=size(img_z,/dim)
   flratio=img_g/img_z
   writefits,'fluxratio_orig.fits',flratio

@@ -98,10 +98,10 @@ PRO fit_m59co
 fits_read, 'data/m59_g_lucy.fits', img, h
 ;estimate sky level
 ;mdrizz=[7.46042280032,7.9962758789,6.9261413824]
-;expt=350.0
+expt=375.0
 ;mdrizzcount=mdrizz/expt
 ;avgdrizz=mean(mdrizzcount)
-;img=img+avgdrizz
+img=img/expt
 
 ;bl=img[265:365,23:123]
 ;br=img[1182:1282,125:225]
@@ -112,7 +112,7 @@ fits_read, 'data/m59_g_lucy.fits', img, h
 ;img = img - skylev    ; subtract sky
 
 scale = 0.05
-ngauss = 10
+ngauss = 15
 minlevel = 0.00001 ; counts/pixel
 
 readcol,'tinytim_fits.dat',normPSF,sigmaPSF,q,format='F,F,F'
@@ -121,7 +121,7 @@ readcol,'tinytim_fits.dat',normPSF,sigmaPSF,q,format='F,F,F'
 ; to experiment with different values of the FRACTION keyword, before adopting
 ; given values of Eps, Ang, Xc, Yc.
 
-find_galaxy, img, majorAxis, eps, ang, xc, yc, /PLOT
+find_galaxy, img, majorAxis, eps, ang, xc, yc,FRACTION=1. ,/PLOT
 
 ; Perform galaxy photometry
 

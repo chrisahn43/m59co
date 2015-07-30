@@ -101,20 +101,20 @@ PRO fit_tinytim;ngc4342
 ;
 ; This example illustrates a simple MGE fit to one single HST/WFPC2/F814W image.
 ;
-  fits_read, 'result00_psf.fits', img, h
+  fits_read, 'data/result00_psf.fits', img, h
   img=img*(1./total(img))
 ;skylev = 0.55 ; counts/pixel
 ;img = img - skylev ; subtract sky
 scale = 0.0231 ; arcsec/pixel
 
-ngauss = 5
-minlevel = 5.e-6 ; counts/pixel
+ngauss = 9
+minlevel = 2.e-6 ; counts/pixel
 
 ; Here we use FIND_GALAXY directly inside the procedure. Usually you may want
 ; to experiment with different values of the FRACTION keyword, before adopting
 ; given values of Eps, Ang, Xc, Yc.
 
-find_galaxy, img, majorAxis, eps, ang, xc, yc, FRACTION=.9, /PLOT
+find_galaxy, img, majorAxis, eps, ang, xc, yc, FRACTION=.8, /PLOT
 
 ; Perform galaxy photometry
 
