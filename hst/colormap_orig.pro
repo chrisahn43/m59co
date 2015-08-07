@@ -1,6 +1,6 @@
 pro colormap_orig
   rad=40.
-  fits_read, 'data/HST_9401_09_ACS_WFC_F475W_drz.fits',img_g,h_g
+  fits_read, '../data/HST_9401_09_ACS_WFC_F475W_drz.fits',img_g,h_g
   img_g=img_g[4260:4372,3942:4054]
   fit_g=gauss2dfit(img_g,gparam)
   xc_g=gparam[4]
@@ -11,7 +11,7 @@ pro colormap_orig
   img_g=img_g/750.
   sizeg=size(img_g,/dim)
 
-  fits_read, 'data/HST_9401_09_ACS_WFC_F850LP_drz.fits',img_z,h_z
+  fits_read, '../data/HST_9401_09_ACS_WFC_F850LP_drz.fits',img_z,h_z
   img_z=img_z[4260:4372,3942:4054]
   fit_z=gauss2dfit(img_z,zparam)
   xc_z=zparam[4]

@@ -1,6 +1,6 @@
 pro radialprofile
   rad=40.
-  fits_read, 'data/m59_g_lucy.fits', img_gd, h_gd
+  fits_read, '../data/m59_g_lucy.fits', img_gd, h_gd
   fit_g=gauss2dfit(img_gd,gparam)
   xc_gd=gparam[4]
   yc_gd=gparam[5]
@@ -13,7 +13,7 @@ pro radialprofile
   yc_gd=gparam[5]
   img_gd=img_gd/375.
 
-  fits_read, 'data/m59_z_lucy.fits',img_zd,h_zd
+  fits_read, '../data/m59_z_lucy.fits',img_zd,h_zd
   fit_z=gauss2dfit(img_zd,zparam)
   xc_zd=zparam[4]
   yc_zd=zparam[5]
@@ -26,7 +26,7 @@ pro radialprofile
   yc_zd=zparam[5]
   img_zd=img_zd/560.
 
-  fits_read, 'data/HST_9401_09_ACS_WFC_F475W_drz.fits',img_go,h_go
+  fits_read, '../data/HST_9401_09_ACS_WFC_F475W_drz.fits',img_go,h_go
   img_go=img_go[4260:4372,3942:4054]
   fit_go=gauss2dfit(img_go,gparamo)
   xc_go=gparamo[4]
@@ -40,7 +40,7 @@ pro radialprofile
   yc_go=gparamo[5]
   img_go=img_go/750.
 
-  fits_read, 'data/HST_9401_09_ACS_WFC_F850LP_drz.fits',img_zo,h_zo
+  fits_read, '../data/HST_9401_09_ACS_WFC_F850LP_drz.fits',img_zo,h_zo
   img_zo=img_zo[4260:4372,3942:4054]
   fit_zo=gauss2dfit(img_zo,zparamo)
   xc_zo=zparamo[4]

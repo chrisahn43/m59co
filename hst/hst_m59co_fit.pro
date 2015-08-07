@@ -93,95 +93,78 @@
 ;       V2.21: Uses CAP_RANGE. MC, Paranal, 8 November 2013
 ;-
 ;----------------------------------------------------------------------------
+PRO fit_m59co
+;
+fits_read, '../data/m59_g_lucy.fits', img, h
+;estimate sky level
+;mdrizz=[7.46042280032,7.9962758789,6.9261413824]
+expt=375.0
+;mdrizzcount=mdrizz/expt
+;avgdrizz=mean(mdrizzcount)
+img=img/expt
 
-;----------------------------------------------------------------------------
-PRO fit_tinytim;ngc4342
-;
-; This procedure reproduces Figures 8-9 in Cappellari (2002)
-;
-; This example illustrates a simple MGE fit to one single HST/WFPC2/F814W image.
-;
-  fits_read, 'data/result00_psf.fits', img, h
-  img=img*(1./total(img))
-;skylev = 0.55 ; counts/pixel
-;img = img - skylev ; subtract sky
-scale = 0.0231 ; arcsec/pixel
+;bl=img[265:365,23:123]
+;br=img[1182:1282,125:225]
+;tl=img[25:125,1070:1170]
+;tr=img[936:1036,1176:1276]
+;avgsky=[mean(bl),mean(br),mean(tl),mean(tr)]
+;skylev = mean(avgsky) ; counts/pixel
+;img = img - skylev    ; subtract sky
 
-ngauss = 9
-minlevel = 2.e-6 ; counts/pixel
+scale = 0.05
+ngauss = 15
+minlevel = 0.00001 ; counts/pixel
+
+readcol,'tinytim_fits.dat',normPSF,sigmaPSF,q,format='F,F,F'
 
 ; Here we use FIND_GALAXY directly inside the procedure. Usually you may want
 ; to experiment with different values of the FRACTION keyword, before adopting
 ; given values of Eps, Ang, Xc, Yc.
 
-find_galaxy, img, majorAxis, eps, ang, xc, yc, FRACTION=.8, /PLOT
+find_galaxy, img, majorAxis, eps, ang, xc, yc,FRACTION=1. ,/PLOT
 
 ; Perform galaxy photometry
 
-sectors_photometry, img, eps, ang, xc, yc, radius, angle, counts, MINLEVEL=minlevel;,N_SECTORS=52,SECTOR_WIDTH=2.5
+sectors_photometry, img, eps, ang, xc, yc, radius, angle, counts, MINLEVEL=minlevel
 
-MGE_fit_sectors, radius, angle, counts, eps,$
-                 SOL=sol, NGAUSS=ngauss, QBOUNDS=[0.9999999,1.],scale=scale;, /LINEAR;,/NEGATIVE
-stop
-modelnorm=1./total(sol[0,*]) ;make output sum 1
-modelpeak=modelnorm*(sol[0,*]) ;make output sum 1
-modelsig=sol[1,*] ;sigma
-modelweight=modelpeak/(2*!PI*(modelsig)^2) ;in flux need A/2*pi*sigma^2
-forprint,modelpeak,modelsig,sol[2,*],format='F,F,F',textout='tinytim_fits.dat' ;output for mge fits on hst image
-
-photflux=fltarr(40)
-modelflux=fltarr(40)
-aperflux=fltarr(40)
-rad=fltarr(40)
-for i=1,40 do begin ;aperture photometry
-   rad[i-1]=2*i
-   asdf=djs_phot(xc,yc,rad[i-1],0.,img, skyval=skyval)
-;   aper,img,xc,yc,flux,aperfluxerr,sky,skyerr,1.0,rad[i-1],[20,25],[-32000000,320000000],setskyval=0.0,/flux,/exact,/silent,/nan
-   photflux[i-1]=asdf
-;   aperflux[i-1]=flux
-endfor
-
-
-for i=1,40 do begin ;reconstruct gaussians
-   modelrad=(0.01*findgen((200*i)+1))
-   temp=0.
-   for j=0,n_elements(modelrad)-2 do begin
-      for k=0,n_elements(modelweight)-1 do begin
-         temp+= (modelweight[k]*exp(-(1./(2*modelsig[k]^2))*((modelrad[j])^2)))*(2*!PI*modelrad[j])*(modelrad[j+1]-modelrad[j])
-      endfor
-   endfor
-   modelflux[i-1]=temp
-endfor
-
+; Do the actual MGE fit 
 ;set_plot,'ps'
-;device,filename='tinytim_photfits.ps',/color
-djs_plot,rad,modelflux,psym=2,yran=[0.2,1.1]
-djs_oplot,rad,photflux,psym=2,color='blue'
-percentdiff=((photflux-modelflux)/photflux)*100
-print,percentdiff
+;device,filename='m59co_photfits.ps'
+MGE_fit_sectors, radius, angle, counts, eps, $
+    NGAUSS=ngauss, SIGMAPSF=sigmaPSF, NORMPSF=normPSF, SOL=sol, SCALE=scale
 ;device,/close
 ;set_plot,'x'
+stop
+
+peakbright=(sol[0,*])/(2*!PI*((sol[1,*])^2)*sol[2,*])
+extinct=0.109
+surfbrightI=26.16252+5.*alog10(scale)-2.5*alog10(peakbright)-extinct
+;http://www.stsci.edu/hst/acs/analysis/zeropoints/old_page/localZeropoints
+Intensity=((64800./!PI)^2)*10^(0.4*(4.08-surfbrightI))
+print,intensity
+sigmaarc=(sol[1,*])*scale
+q=sol[2,*]
+forprint,intensity,sigmaarc,q,format='F,F,F',textout='m59co_mge_output.dat'
 stop
 ; Print the data-model contours comparison of the whole image
 
 MGE_print_contours, img>minlevel, ang, xc, yc, sol, $
-    FILE='tinytim.ps', SCALE=scale, MAGRANGE=9;, $
-    ;SIGMAPSF=sigmaPSF, NORMPSF=normPSF, BINNING=7
+    FILE='hst_m59co.ps', SCALE=scale, MAGRANGE=9, $
+    SIGMAPSF=sigmaPSF, NORMPSF=normPSF, BINNING=7
 
 ; Print the data-model contours comparison of the central regions
 
 s = SIZE(img)
 img = img[xc-s[1]/9:xc+s[1]/9,yc-s[2]/9:yc+s[2]/9]
 MGE_print_contours, img, ang, s[1]/9, s[2]/9, sol, $
-    FILE='tinytim_nuclear.ps', SCALE=scale, MAGRANGE=9;, $
- ;   SIGMAPSF=sigmaPSF, NORMPSF=normPSF
+    FILE='hst_m59co_nuclear.ps', SCALE=scale, MAGRANGE=9, $
+                    SIGMAPSF=sigmaPSF, NORMPSF=normPSF
+
 
 END
-
-
-
 ;----------------------------------------------------------------------------
-PRO tiny_tim_fit
+;----------------------------------------------------------------------------
+PRO hst_m59co_fit
 ;
 ; This is the main routine to call in succession the MGE fits to
 ; M32, NGC4342, NGC4473, power-law and NGC5831, and measure the execution time.
@@ -192,13 +175,8 @@ PRO tiny_tim_fit
 ; It was tested with IDL 5.6-8.1 under both Windows and Linux.
 ;
 t = SYSTIME(1)
-;fit_m32
-fit_tinytim;ngc4342
-;fit_ngc4473
-;fit_double_powerlaw_1d
-;fit_ngc5831_twist
+fit_m59co
 PRINT, 'Total computation time:', SYSTIME(1) - t, ' Seconds'
 
 END
-
 ;----------------------------------------------------------------------------

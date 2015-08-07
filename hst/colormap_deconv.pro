@@ -3,7 +3,7 @@ pro colormap_deconv
                                 ;Make a color map and compare to
                                 ;http://adsabs.harvard.edu/abs/2008MNRAS.385L..83C
   rad=40.
-  fits_read, 'data/m59_g_lucy.fits',img_g,h_g
+  fits_read, '../data/m59_g_lucy.fits',img_g,h_g
   fit_g=gauss2dfit(img_g,gparam)
   xc_g=gparam[4]
   yc_g=gparam[5]
@@ -13,7 +13,7 @@ pro colormap_deconv
   img_g=img_g/375.
   sizeg=size(img_g,/dim)
 
-  fits_read, 'data/m59_z_lucy.fits',img_z,h_z
+  fits_read, '../data/m59_z_lucy.fits',img_z,h_z
   fit_z=gauss2dfit(img_z,zparam)
   xc_z=zparam[4]
   yc_z=zparam[5]
