@@ -2,7 +2,7 @@
 PRO RUN_INT
 
 
-fwhmfile='../../sky/m59co/fullcube_disp_med.fits'
+fwhmfile='../../sky/m59co_disp_med.fits'
 contfile='../lum_model/m59co_combine_goodmay_cont.fits'
 fwhm=READFITS(fwhmfile)
 cont=READFITS(contfile)
