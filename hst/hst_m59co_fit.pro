@@ -110,10 +110,10 @@ img=img/expt
 ;avgsky=[mean(bl),mean(br),mean(tl),mean(tr)]
 ;skylev = mean(avgsky) ; counts/pixel
 ;img = img - skylev    ; subtract sky
-
+imgsize=size(img,/dim)
 scale = 0.05
 ngauss = 15
-minlevel = 0.00001 ; counts/pixel
+minlevel = 0.000;01 ; counts/pixel
 
 readcol,'tinytim_fits.dat',normPSF,sigmaPSF,q,format='F,F,F'
 
@@ -145,6 +145,52 @@ print,intensity
 sigmaarc=(sol[1,*])*scale
 q=sol[2,*]
 forprint,intensity,sigmaarc,q,format='F,F,F',textout='m59co_mge_output.dat'
+
+modelweight=peakbright
+modelsig=sol[1,*]
+rad=10^((findgen(36)*0.073)+0.073);[findgen(19)*3+3,findgen(30)*10+60];,250,370]
+minrad=10^(findgen(36)*0.073);[findgen(20)*3,findgen(29)*10+60];,200,250]
+N=n_elements(rad)
+photflux=fltarr(N)
+modelflux=fltarr(N)
+area=fltarr(N)
+photmag=fltarr(N)
+modelmag=fltarr(N)
+
+zp=26.05923
+modelimg=fltarr(imgsize[0],imgsize[1])
+x=[reverse(findgen(xc))+1,findgen(imgsize[0]-xc)]
+y=[reverse(findgen(yc))+1,findgen(imgsize[1]-yc)]
+for i=0,n_elements(x)-1 do begin
+   for j=0,n_elements(y)-1 do begin
+      temp=0.
+      for k=0,n_elements(modelweight)-1 do begin
+         temp+= (modelweight[k]*exp(-(1./(2*modelsig[k]^2))*(x[i]^2+(y[j]^2/q[k]^2))))
+      endfor
+      modelimg[i,j]=temp
+    endfor
+endfor
+writefits,'hst_mge_m59co.fits',modelimg
+
+for i=0,n_elements(rad)-1 do begin
+   maxflux_phot=djs_phot(xc,yc,rad[i],0.,img,skyval=skyval)
+   minflux_phot=djs_phot(xc,yc,minrad[i],0.,img,skyval=skyval)
+   maxflux_model=djs_phot(xc,yc,rad[i],0.,modelimg,skyval=skyval)
+   minflux_model=djs_phot(xc,yc,minrad[i],0.,modelimg,skyval=skyval)
+   area[i]=((!PI*(rad[i])^2)-(!PI*(minrad[i])^2))*scale
+   photflux[i]=maxflux_phot-minflux_phot
+   modelflux[i]=maxflux_model-minflux_model
+   photmag[i]=zp+5*alog10(scale)+2.5*alog10(area[i])-2.5*alog10(photflux[i])
+   modelmag[i]=zp+5*alog10(scale)+2.5*alog10(area[i])-2.5*alog10(modelflux[i])
+endfor
+;set_plot,'ps'
+;device,filename='surfbright_hst_fits.ps',/color
+djs_plot,rad*scale,modelmag,psym=2,xtitle='Radius ["]',ytitle='\mu [Mag/sqare arcsecond]',yran=[23,10],xran=[0,13],charsize=1.5,charthick=4,xthick=3,ythick=3
+djs_oplot,rad*scale,photmag,color='blue',thick=3;,psym=2
+djs_oplot,rad*scale,photmag,psym=4
+;device,/close
+;set_plot,'x'
+
 stop
 ; Print the data-model contours comparison of the whole image
 

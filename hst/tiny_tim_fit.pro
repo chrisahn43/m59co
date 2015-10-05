@@ -114,7 +114,7 @@ minlevel = 2.e-6 ; counts/pixel
 ; to experiment with different values of the FRACTION keyword, before adopting
 ; given values of Eps, Ang, Xc, Yc.
 
-find_galaxy, img, majorAxis, eps, ang, xc, yc, FRACTION=.8, /PLOT
+find_galaxy, img, majorAxis, eps, ang, xc, yc, FRACTION=.9, /PLOT
 
 ; Perform galaxy photometry
 
