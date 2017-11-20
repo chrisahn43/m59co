@@ -83,5 +83,5 @@ plots,[2.2078e4,2.2078e4]*redshift,!Y.CRANGE
 ind=WHERE(lambda GT 2.28e4 and lambda LT 2.40e4)
 print,MEDIAN(outspec[ind]/SQRT(outvar[ind]))
 ;a=GET_KBRD()
-STOP
+;STOP
 END

@@ -2,14 +2,14 @@
 pro ppxf_wallace,lambda,spec,var,fwhm,OUTRV=outrv,OUTDISP=outdisp,OUTSOL=sol,DOERROR=doerror,OUTERROR=outerror,BINNUM=BINNUM,INITVEL=initvel,nodispchi=nodispchi,QUIET=QUIET,BESTFIT=BESTFIT,LOGLAMOUT=LOGLAMOUT,GALAXY=galaxy,RESIDSN=RESIDSN
 
 loadct,12,/silent
-minfit=2.295e4  ;part of the target spectra to extract
-maxfit=2.395e4
+minfit=2.29e4  ;part of the target spectra to extract
+maxfit=2.37e4;95e4
 mintemp=2.28e4 ;part of the template to use
 maxtemp=2.40e4
 velscale=25 ;for the data
 velscaletemp=1. ;for the templates
 tempbin=FIX(velscale/velscaletemp)
-
+var=0.35*var
 ;rv0=5 ;alpha boo's radial velocity (no V_LSR correction)
 ;currently no rv0 correction!
 ind=WHERE(lambda GT minfit AND lambda LT maxfit,nind)
@@ -27,10 +27,10 @@ wallacesave='wallace_templates.idl'
 IF (FILE_TEST(wallacesave) EQ 0) THEN BEGIN
 ;READCOL,'../wallace/wallace_table.dat',wallaceroot,rv,FORMAT='A,X,F',/SILENT
 ;wallace='../wallace/'+STRLOWCASE(wallaceroot)+'_v1r.fits'
-READCOL,'../wallace96/wallace_rvcor.dat',wallacefile,rv,spclass,lumclass,FORMAT='A,I,F,F',/SILENT
+READCOL,'./wallace96/wallace_rvcor.dat',wallacefile,rv,spclass,lumclass,FORMAT='A,I,F,F',/SILENT
 wallaceroot=STRMID(wallacefile,0,5)
-wallace='../wallace96/'+STRLOWCASE(wallacefile)
-wallacedqfiles='../wallace96/'+STRLOWCASE(wallaceroot)+'_err.fits'
+wallace='./wallace96/'+STRLOWCASE(wallacefile)
+wallacedqfiles='./wallace96/'+STRLOWCASE(wallaceroot)+'_err.fits'
 goodtemp=[1,2,3,5,6,8,9,10];wallace templates to use
 nfiles=N_ELEMENTS(goodtemp)
 wallaceflux=READFITS(wallace[0],head)
@@ -145,8 +145,9 @@ intmask=INTERPOL(mask,loglamrebin,loglam1)
 ;What should the clipping value be?
 goodpix=WHERE(intmask LT 0.2 AND linearr EQ 0)
 ppxf, convtemplates, galaxy, error, velScale, start, sol,  MOMENTS=2, DEGREE=4, VSYST=dv,WEIGHTS=weights,goodpix=goodpix,QUIET=QUIET,BESTFIT=bestfit,/PLOT,/OVERSAMPLE
-axis,xaxis=2,xrange=[EXP(MIN(loglam1))/1.e4,EXP(MAX(loglam1))/1.e4],chars=1.5,/xsty,xtitle='microns'
+axis,xaxis=2,xrange=[EXP(MIN(loglam1))/1.e4,EXP(MAX(loglam1))/1.e4],chars=1.5,/xsty,xtitle='Wavelength [!7l!3m]',charthick=4,xthick=3
 axis,xaxis=1,xrange=[EXP(MIN(loglam1))/1.e4,EXP(MAX(loglam1))/1.e4],chars=0.0001,/xsty
+xyouts,[350.35],[7800],['M59cO'],charthick=3,charsize=1.5
 resid=galaxy-bestfit
 MEANCLIP,resid,meanresid,4.0,subs=goodresid
 ;calculate error to use in MC tests
@@ -172,6 +173,7 @@ outdisp=sol[1]
 loadct,0,/silent
 
 IF KEYWORD_SET(DOERROR) THEN BEGIN
+;   stop
     nruns=50
     npixels=N_ELEMENTS(galaxy)
     allsol=FLTARR(11,nruns)

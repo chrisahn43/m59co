@@ -1,7 +1,9 @@
-  0.0  1.5  0.981  4.064 m59co_goodmay_int_fc0-1.fits
-  1.5  2.5  2.017  4.012 m59co_goodmay_int_fc1-2.fits
-  2.5  4.0  3.266  4.029 m59co_goodmay_int_fc2-4.fits
-  4.0  6.0  4.980  4.045 m59co_goodmay_int_fc4-6.fits
-  6.0  9.0  7.449  4.072 m59co_goodmay_int_fc6-9.fits
-  9.0 12.0 10.470  4.094 m59co_goodmay_int_fc9-12.fits
- 12.0 18.0 14.778  4.099 m59co_goodmay_int_fc12-18.fits
+  0.0  1.0  0.504  4.104 m59co_goodmay_int_fc0-1.fits
+  1.0  1.8  1.307  4.048 m59co_goodmay_int_fc1-1.fits
+  1.8  2.5  2.098  4.004 m59co_goodmay_int_fc1-2.fits
+  2.5  3.3  2.903  4.022 m59co_goodmay_int_fc2-3.fits
+  3.3  4.3  3.811  4.038 m59co_goodmay_int_fc3-4.fits
+  4.3  5.5  4.905  4.052 m59co_goodmay_int_fc4-5.fits
+  5.5  7.2  6.337  4.058 m59co_goodmay_int_fc5-7.fits
+  7.2 12.0  9.497  4.086 m59co_goodmay_int_fc7-12.fits
+ 12.0 22.0 16.421  4.099 m59co_goodmay_int_fc12-22.fits
